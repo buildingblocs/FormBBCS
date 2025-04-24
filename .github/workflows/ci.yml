@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1'  # Every Monday
+
+jobs:
+  ### 1. Clone and Replace
+  clone_and_replace:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout upstream repo
+        uses: actions/checkout@v4
+        with:
+          repository: opengovsg/FormSG
+          ref: refs/heads/release-al2
+          path: formsg
+
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+        with:
+          path: demo
+
+      - name: Replace files with demo-specific ones
+        run: |
+          cp -rf demo/replacements/* formsg/
+          rm -rf demo/replacements
+
+      - name: Upload modified app
+        uses: actions/upload-artifact@v4
+        with:
+          name: modified-formsg
+          path: formsg
+
+  ### 2. Deploy to Fly
+  deploy_to_fly:
+    runs-on: ubuntu-latest
+    needs: clone_and_replace
+    steps:
+      - name: Download modified app
+        uses: actions/download-artifact@v4
+        with:
+          name: modified-formsg
+          path: formsg
+
+      - name: Setup Fly
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly
+        run: flyctl deploy --remote-only --dockerfile Dockerfile.fly
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        working-directory: formsg
+
+  ### 3. Deploy to Cloudflare
+  deploy_to_cloudflare:
+    runs-on: ubuntu-latest
+    needs: clone_and_replace
+    steps:
+      - name: Download modified app
+        uses: actions/download-artifact@v4
+        with:
+          name: modified-formsg
+          path: formsg
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: formsg
+
+      - name: Build
+        run: npm run build:frontend
+        working-directory: formsg
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: formsg
+          directory: formsg/dist/frontend
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

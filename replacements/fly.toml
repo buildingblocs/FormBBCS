@@ -1,0 +1,86 @@
+# fly.toml app configuration file generated for formsg-1 on 2025-04-05T18:48:34+08:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'formsg-1'
+primary_region = 'sin'
+swap_size_mb = 1024
+
+[env]
+  API_KEY_VERSION = 'v1'
+  APP_DESC = 'Forms for BuildingBloCS'
+  APP_NAME = 'BuildingBloCS'
+  APP_URL = 'https://formsg-1.fly.dev'
+  ATTACHMENT_S3_BUCKET = 'attachment'
+  AWS_REGION = 'us-east-1'
+  BOUNCE_LIFE_SPAN = '86400000'
+  CP_OIDC_NDI_DISCOVERY_ENDPOINT = 'https://mockpass.demos.sg/corppass/v2/.well-known/openid-configuration'
+  CP_OIDC_NDI_JWKS_ENDPOINT = 'https://mockpass.demos.sg/corppass/v2/.well-known/keys'
+  CP_OIDC_RP_CLIENT_ID = 'rpClientId'
+  CP_OIDC_RP_JWKS_PUBLIC_PATH = './__tests__/setup/certs/test_cp_rp_public_jwks.json'
+  CP_OIDC_RP_JWKS_SECRET_PATH = './__tests__/setup/certs/test_cp_rp_secret_jwks.json'
+  CP_OIDC_RP_REDIRECT_URL = 'https://form.demos.sg/api/v3/corppass/login'
+  CSP_REPORT_URI = 'https://random@sentry.io/123456'
+  FE_APP_URL = 'https://form.buildingblocs.sg'
+  FORMSG_SDK_MODE = 'production'
+  GA_TRACKING_ID = 'mockGATrackingId'
+  GROWTHBOOK_CLIENT_KEY = 'notused'
+  GUARDDUTY_QUARANTINE_S3_BUCKET = 'g-q'
+  IMAGE_S3_BUCKET = 'image'
+  LOGO_S3_BUCKET = 'logo'
+  MYINFO_CERT_PATH = './node_modules/@opengovsg/mockpass/static/certs/spcp.crt'
+  MYINFO_CLIENT_CONFIG = 'dev'
+  MYINFO_CLIENT_ID = 'mockClientId'
+  MYINFO_CLIENT_SECRET = 'mockClientSecret'
+  MYINFO_FORMSG_KEY_PATH = './node_modules/@opengovsg/mockpass/static/certs/key.pem'
+  MYINFO_JWT_SECRET = 'mockJwtSecret'
+  PAYMENT_PROOF_S3_BUCKET = 'payment-proof'
+  POSTMAN_BASE_URL = 'notused'
+  POSTMAN_INTERNAL_CAMPAIGN_API_KEY = 'notused'
+  POSTMAN_INTERNAL_CAMPAIGN_ID = 'notused'
+  POSTMAN_MOP_CAMPAIGN_API_KEY = 'notused'
+  POSTMAN_MOP_CAMPAIGN_ID = 'notused'
+  SECRET_ENV = 'development'
+  SEND_AUTH_OTP_RATE_LIMIT = '60'
+  SENTRY_CONFIG_URL = 'https://random@sentry.io/123456'
+  SES_PORT = '587'
+  SES_USER = 'no-reply@form.buildingblocs.sg'
+  SGID_ADMIN_LOGIN_REDIRECT_URI = 'https://form.demos.sg/api/v3/auth/sgid/login/callback'
+  SGID_CLIENT_ID = 'sgidclientid'
+  SGID_CLIENT_SECRET = 'sgidclientsecret'
+  SGID_FORM_LOGIN_REDIRECT_URI = 'https://form.demos.sg/sgid/login'
+  SGID_HOSTNAME = 'https://mockpass.demos.sg'
+  SGID_JWT_SECRET = 'sgidjwtsecret'
+  SGID_PRIVATE_KEY = './node_modules/@opengovsg/mockpass/static/certs/key.pem'
+  SGID_PUBLIC_KEY = './node_modules/@opengovsg/mockpass/static/certs/server.crt'
+  SINGPASS_ESRVC_ID = 'spEsrvcId'
+  SP_OIDC_NDI_DISCOVERY_ENDPOINT = 'https://mockpass.demos.sg/singpass/v2/.well-known/openid-configuration'
+  SP_OIDC_NDI_JWKS_ENDPOINT = 'https://mockpass.demos.sg/singpass/v2/.well-known/keys'
+  SP_OIDC_RP_CLIENT_ID = 'rpClientId'
+  SP_OIDC_RP_JWKS_PUBLIC_PATH = './__tests__/setup/certs/test_sp_rp_public_jwks.json'
+  SP_OIDC_RP_JWKS_SECRET_PATH = './__tests__/setup/certs/test_sp_rp_secret_jwks.json'
+  SP_OIDC_RP_REDIRECT_URL = 'https://formsg-1.fly.dev/api/v3/singpass/login'
+  SSM_ENV_SITE_NAME = 'development'
+  STATIC_ASSETS_S3_BUCKET = 'static-assets'
+  SUBMISSIONS_RATE_LIMIT = '200'
+  TWILIO_ACCOUNT_SID = 'AC00000000000000000000000000000000'
+  TWILIO_API_KEY = 'mockTwilioApiKey'
+  TWILIO_API_SECRET = 'mockTwilioApiSecret'
+  TWILIO_MESSAGING_SERVICE_SID = 'MG00000000000000000000000000000000'
+  VIRUS_SCANNER_CLEAN_S3_BUCKET = 'v-s-c'
+  VIRUS_SCANNER_LAMBDA_FUNCTION_NAME = 'function'
+  VIRUS_SCANNER_QUARANTINE_S3_BUCKET = 'v-s-q'
+  SES_CONFIG_SET = ""
+  MAIL_FROM = "no-reply@form.buildingblocs.sg"
+
+[http_service]
+  internal_port = 5000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  size = 'shared-cpu-1x'
