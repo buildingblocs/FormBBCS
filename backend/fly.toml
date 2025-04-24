@@ -45,7 +45,7 @@ swap_size_mb = 1024
   SEND_AUTH_OTP_RATE_LIMIT = '60'
   SENTRY_CONFIG_URL = 'https://random@sentry.io/123456'
   SES_PORT = '587'
-  SES_USER = 'no-reply@form.buildingblocs.sg'
+  SES_USER = 'no-reply@api.form.buildingblocs.sg'
   SGID_ADMIN_LOGIN_REDIRECT_URI = 'https://form.demos.sg/api/v3/auth/sgid/login/callback'
   SGID_CLIENT_ID = 'sgidclientid'
   SGID_CLIENT_SECRET = 'sgidclientsecret'
@@ -72,7 +72,7 @@ swap_size_mb = 1024
   VIRUS_SCANNER_LAMBDA_FUNCTION_NAME = 'function'
   VIRUS_SCANNER_QUARANTINE_S3_BUCKET = 'v-s-q'
   SES_CONFIG_SET = ""
-  MAIL_FROM = "no-reply@form.buildingblocs.sg"
+  MAIL_FROM = "no-reply@api.form.buildingblocs.sg"
 
 [http_service]
   internal_port = 5000
