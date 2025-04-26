@@ -68,11 +68,10 @@ jobs:
         run: npm run build:frontend
         working-directory: formsg
 
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@1
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: formsg
-          directory: formsg/dist/frontend
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          server: lu-shared02.dapanel.net
+          username: action@form.buildingblocs.sg
+          password: ${{ secrets.ftp_password }}
+          local-dir: formsg/dist/frontend/
