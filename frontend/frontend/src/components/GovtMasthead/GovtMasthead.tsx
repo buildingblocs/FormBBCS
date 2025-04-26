@@ -187,7 +187,7 @@ export const GovtMasthead = ({
         >
           <GovtMastheadItem
             icon={BxsBank}
-            header="Official website links end with .gov.sg"
+            header="Official website links end with .buildingblocs.sg"
           >
             <Box textStyle={{ base: 'caption-2', md: 'body-1' }}>
               <Text as="span">
