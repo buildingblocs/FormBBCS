@@ -674,7 +674,7 @@ export class MailService {
         return this.#sendSingleAutoreplyMail({
           form,
           submission,
-          attachments: mailData.includeFormSummary,
+          attachments: [],
           autoReplyMailData: mailData,
           formSummaryRenderData: renderData,
           index,
