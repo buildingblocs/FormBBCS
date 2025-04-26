@@ -644,29 +644,29 @@ export class MailService {
     }
 
     // Create a copy of attachments for attaching of autoreply pdf if needed.
-    const attachmentsWithAutoreplyPdf = [...attachments]
-    const isEncryptForm = form?.responseMode === FormResponseMode.Encrypt
-    const encryptFormDef = form as IPopulatedEncryptedForm
-    const isPaymentEnabled =
-      isEncryptForm &&
-      encryptFormDef.payments_channel.channel !== PaymentChannel.Unconnected &&
-      encryptFormDef.payments_field.enabled === true
+    // const attachmentsWithAutoreplyPdf = [...attachments]
+    // const isEncryptForm = form?.responseMode === FormResponseMode.Encrypt
+    // const encryptFormDef = form as IPopulatedEncryptedForm
+    // const isPaymentEnabled =
+    //   isEncryptForm &&
+    //   encryptFormDef.payments_channel.channel !== PaymentChannel.Unconnected &&
+    //   encryptFormDef.payments_field.enabled === true
 
-    // Generate autoreply pdf and append into attachments if any of the mail has
-    // to include a form summary.
-    if (
-      autoReplyMailDatas.some((data) => data.includeFormSummary) &&
-      !isPaymentEnabled
-    ) {
-      const pdfBufferResult = await generateAutoreplyPdf(renderData)
-      if (pdfBufferResult.isErr()) {
-        return Promise.allSettled([err(pdfBufferResult.error)])
-      }
-      attachmentsWithAutoreplyPdf.push({
-        filename: 'response.pdf',
-        content: pdfBufferResult.value,
-      })
-    }
+    // // Generate autoreply pdf and append into attachments if any of the mail has
+    // // to include a form summary.
+    // if (
+    //   autoReplyMailDatas.some((data) => data.includeFormSummary) &&
+    //   !isPaymentEnabled
+    // ) {
+    //   const pdfBufferResult = await generateAutoreplyPdf(renderData)
+    //   if (pdfBufferResult.isErr()) {
+    //     return Promise.allSettled([err(pdfBufferResult.error)])
+    //   }
+    //   attachmentsWithAutoreplyPdf.push({
+    //     filename: 'response.pdf',
+    //     content: pdfBufferResult.value,
+    //   })
+    // }
 
     // Prepare mail sending for each autoreply mail.
     return Promise.allSettled(
@@ -674,13 +674,11 @@ export class MailService {
         return this.#sendSingleAutoreplyMail({
           form,
           submission,
-          attachments: mailData.includeFormSummary
-            ? attachmentsWithAutoreplyPdf
-            : attachments,
+          attachments: mailData.includeFormSummary,
           autoReplyMailData: mailData,
           formSummaryRenderData: renderData,
           index,
-          isPaymentEnabled,
+        //   isPaymentEnabled,
         })
       }),
     )
