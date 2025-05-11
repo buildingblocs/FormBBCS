@@ -69,9 +69,11 @@ jobs:
         working-directory: formsg
 
       - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/web-deploy@v1
         with:
-          server: lu-shared02.dapanel.net
-          username: action@form.buildingblocs.sg
-          password: ${{ secrets.ftp_password }}
-          local-dir: formsg/dist/frontend/
+          target-server: ny-shared01.dapanel.net
+          remote-user: buildingblocs
+          ssh-port: 53667
+          private-ssh-key: ${{ secrets.SSH_KEY }}
+          destination-path: ~/domains/form.buildingblocs.sg/public_html/
+          source-path: formsg/dist/frontend/
