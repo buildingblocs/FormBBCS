@@ -211,8 +211,7 @@ const cookieSettings: SessionOptions['cookie'] = {
   httpOnly: true, // JavaScript will not be able to read the cookie in case of XSS exploitation
   secure: !isDevOrTest, // true prevents cookie from being accessed over http
   maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  sameSite: 'none',
-  partitioned: true // Cookie will not be sent if navigating from another domain
+  sameSite: 'none'
 }
 
 /**
