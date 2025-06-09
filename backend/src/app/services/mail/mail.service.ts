@@ -640,10 +640,10 @@ export class MailService {
         .tz('Asia/Singapore')
         .format('ddd, DD MMM YYYY hh:mm:ss A'),
       formData: responsesData,
-      formUrl: `https://form.buildingblocs.sg/${form._id}`,
+      formUrl: `${this.#appUrl}/${form._id}`,
     }
 
-    // Create a copy of attachments for attaching of autoreply pdf if needed.
+    // // Create a copy of attachments for attaching of autoreply pdf if needed.
     // const attachmentsWithAutoreplyPdf = [...attachments]
     // const isEncryptForm = form?.responseMode === FormResponseMode.Encrypt
     // const encryptFormDef = form as IPopulatedEncryptedForm
@@ -678,7 +678,7 @@ export class MailService {
           autoReplyMailData: mailData,
           formSummaryRenderData: renderData,
           index,
-        //   isPaymentEnabled,
+          // isPaymentEnabled,
         })
       }),
     )
@@ -986,6 +986,87 @@ export class MailService {
         formId,
         mailId: 'workflowNotification',
       })
+    })
+  }
+
+  sendMrfRespondentCopyEmail = ({
+    emails,
+    formId,
+    formTitle,
+    responseId,
+    formQuestionAnswers,
+    attachments,
+  }: {
+    emails: string[]
+    formId: string
+    formTitle: string
+    responseId: string
+    formQuestionAnswers: QuestionAnswer[]
+    attachments?: Mail.Attachment[]
+  }) => {
+    const htmlData = {
+      formTitle,
+      responseId: responseId.toString(),
+      formQuestionAnswers,
+      respondentCopy: true,
+    }
+
+    const generatedHtml = fromPromise(
+      render(MrfWorkflowCompletionEmail(htmlData)),
+      (e) => {
+        logger.error({
+          message: 'Failed to render MrfRespondentCopyEmail',
+          meta: {
+            action: 'sendMrfRespondentCopyEmail',
+            error: e,
+          },
+        })
+
+        return new MailGenerationError(
+          'Error generating mrf respondent copy email',
+        )
+      },
+    )
+
+    return generatedHtml.andThen((mailHtml) => {
+      const mail: MailOptions = {
+        to: emails,
+        from: this.#senderFromString,
+        subject: `Thank you for submitting ${formTitle} (${responseId})`,
+        html: mailHtml,
+        attachments,
+      }
+
+      return this.#sendNodeMail(mail, {
+        formId,
+        mailId: 'workflowNotification',
+      })
+    })
+  }
+
+  sendRespondentCopyEmail = ({
+    emails,
+    formId,
+    formTitle,
+    responseId,
+    mailHtml,
+  }: {
+    emails: string[]
+    formId: string
+    formTitle: string
+    responseId: string
+    mailHtml: string
+  }) => {
+    const mail: MailOptions = {
+      to: emails,
+      from: this.#senderFromString,
+      subject: `Thank you for submitting ${formTitle} (${responseId})`,
+      html: mailHtml,
+    }
+
+    return this.#sendNodeMail(mail, {
+      formId,
+      mailId: 'workflowNotification',
     })
   }
 }
