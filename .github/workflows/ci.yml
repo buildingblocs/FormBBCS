@@ -77,3 +77,4 @@ jobs:
           private-ssh-key: ${{ secrets.SSH_KEY }}
           destination-path: ~/domains/form.buildingblocs.sg/public_html/
           source-path: formsg/dist/frontend/
+          rsync-options: --archive --verbose --compress --human-readable --progress --exclude=.htaccess
