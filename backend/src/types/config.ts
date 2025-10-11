@@ -52,8 +52,8 @@ export type AwsConfig = {
   guarddutyLambda: Lambda
   guarddutyLambdaFunctionName: string
   // pdfGeneratorLambda
-//   pdfGeneratorLambda: Lambda
-//   pdfGeneratorLambdaFunctionName: string
+  pdfGeneratorLambda?: Lambda
+  pdfGeneratorLambdaFunctionName?: string
 }
 
 export type MailConfig = {
