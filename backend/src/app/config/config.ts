@@ -19,13 +19,21 @@ import {
 import {
   compulsoryVarsSchema,
   loadS3BucketUrlSchema,
+  optionalValuesFromSsm,
   optionalVarsSchema,
   prodOnlyVarsSchema,
+  resetToApplicationDefaultForUndefinedSsmValues,
 } from './schema'
 
 // Load and validate optional configuration values
 // If environment variables are not present, defaults are loaded
-const optionalVars = convict(optionalVarsSchema)
+const optionalVarsConfig = convict(optionalVarsSchema)
+resetToApplicationDefaultForUndefinedSsmValues(
+  optionalVarsConfig,
+  optionalValuesFromSsm,
+)
+
+const optionalVars = optionalVarsConfig
   .validate({ allowed: 'strict' })
   .getProperties()
 
@@ -154,7 +162,6 @@ const dbConfig: DbConfig = {
     pass: '',
     // Only create indexes in dev env to avoid adverse production impact.
     autoIndex: isDevOrTest,
-    promiseLibrary: global.Promise,
   },
 }
 
