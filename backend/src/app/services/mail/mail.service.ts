@@ -27,6 +27,7 @@ import {
   EmailAddressVerificationOtp,
   EmailAddressVerificationOtpHtmlData,
 } from '../../views/templates/EmailAddressVerificationOtp'
+import { FormDeactivatedNotification } from '../../views/templates/FormDeactivatedNotification'
 import MrfWorkflowCompletionEmail, {
   QuestionAnswer,
   WorkflowOutcome,
@@ -34,12 +35,19 @@ import MrfWorkflowCompletionEmail, {
 import MrfWorkflowEmail, {
   WorkflowEmailData,
 } from '../../views/templates/MrfWorkflowEmail'
+import { SmsThresholdWarningNotification } from '../../views/templates/SmsThresholdWarningNotification'
+import { smsThreshold } from '../sms/sms.utils'
 
 import { EMAIL_HEADERS, EmailType } from './mail.constants'
-import { MailGenerationError, MailSendError } from './mail.errors'
+import {
+  AutoreplyPdfGenerationError,
+  MailGenerationError,
+  MailSendError,
+} from './mail.errors'
 import {
   AutoreplySummaryRenderData,
   BounceNotificationHtmlData,
+  FormDeactivatedNotificationHtmlData,
   IssueReportedNotificationData,
   MailOptions,
   MailServiceParams,
@@ -47,11 +55,12 @@ import {
   SendAutoReplyEmailsArgs,
   SendMailOptions,
   SendSingleAutoreplyMailArgs,
+  SmsThresholdWarningNotificationHtmlData,
   SubmissionToAdminHtmlData,
 } from './mail.types'
 import {
   generateAutoreplyHtml,
-  generateAutoreplyPdf,
+  // generateAutoreplyPdf,
   generateIssueReportedNotificationHtml,
   generateLoginOtpHtml,
   generatePaymentConfirmationHtml,
@@ -515,6 +524,145 @@ export class MailService {
   }
 
   /**
+   * Sends a notification for critical bounce
+   * @param args the parameter object
+   * @param args.emailRecipients emails to send to
+   * @param args.formTitle title of form
+   * @param args.formId ID of form
+   * @throws error if mail fails, to be handled by the caller
+   */
+  sendFormDeactivatedNotification = ({
+    emailRecipients,
+    formTitle,
+    formId,
+  }: {
+    emailRecipients: string[]
+    formTitle: string
+    formId: string
+  }): ResultAsync<true, MailGenerationError | MailSendError> => {
+    const htmlData: FormDeactivatedNotificationHtmlData = {
+      formTitle,
+      formLink: `${this.#appUrl}/${formId}`,
+      appName: this.#appName,
+    }
+
+    const generatedHtml = fromPromise(
+      render(FormDeactivatedNotification(htmlData)),
+      (e) => {
+        logger.error({
+          message: 'Failed to render FormDeactivatedNotification',
+          meta: {
+            action: 'sendFormDeactivatedNotification',
+            error: e,
+          },
+        })
+
+        return new MailGenerationError(
+          'Error generating form deactivated notification email',
+        )
+      },
+    )
+
+    return generatedHtml.andThen((mailHtml) => {
+      const mail: MailOptions = {
+        to: emailRecipients,
+        from: this.#senderFromString,
+        subject: 'Form Deactivated due to exceeding free sms threshold',
+        html: mailHtml,
+        headers: {
+          [EMAIL_HEADERS.emailType]: EmailType.WarningNotification,
+          [EMAIL_HEADERS.formId]: formId,
+        },
+      }
+
+      return this.#sendNodeMail(mail, { mailId: 'warning' }).mapErr((error) => {
+        // Add additional logging.
+        logger.error({
+          message: 'Error sending form deactivated notification email',
+          meta: {
+            action: 'sendFormDeactivatedNotification',
+            formTitle,
+            formId,
+          },
+          error,
+        })
+        return error
+      })
+    })
+  }
+
+  /**
+   * Sends a notification for sms threshold hit warning
+   * @param args the parameter object
+   * @param args.emailRecipients emails to send to
+   * @param args.formTitle title of form
+   * @param args.formId ID of form
+   * @throws error if mail fails, to be handled by the caller
+   */
+  sendSmsThresholdWarningNotification = ({
+    emailRecipients,
+    formTitle,
+    formId,
+    smsThreshold,
+  }: {
+    emailRecipients: string[]
+    formTitle: string
+    formId: string
+    smsThreshold: smsThreshold
+  }): ResultAsync<true, MailGenerationError | MailSendError> => {
+    const htmlData: SmsThresholdWarningNotificationHtmlData = {
+      formTitle,
+      formLink: `${this.#appUrl}/${formId}`,
+      appName: this.#appName,
+      smsThreshold,
+    }
+
+    const generatedHtml = fromPromise(
+      render(SmsThresholdWarningNotification(htmlData)),
+      (e) => {
+        logger.error({
+          message: 'Failed to render SmsThresholdWarningNotification',
+          meta: {
+            action: 'sendSmsThresholdWarningNotification',
+            error: e,
+          },
+        })
+
+        return new MailGenerationError(
+          'Error generating sms threshold warning notification email',
+        )
+      },
+    )
+
+    return generatedHtml.andThen((mailHtml) => {
+      const mail: MailOptions = {
+        to: emailRecipients,
+        from: this.#senderFromString,
+        subject: `[Alert] SMS usage for your form has reached ${smsThreshold * 100}% of the free limit`,
+        html: mailHtml,
+        headers: {
+          [EMAIL_HEADERS.emailType]: EmailType.AdminBounce,
+          [EMAIL_HEADERS.formId]: formId,
+        },
+      }
+
+      return this.#sendNodeMail(mail, { mailId: 'warning' }).mapErr((error) => {
+        // Add additional logging.
+        logger.error({
+          message: 'Error sending sms threshold warning notification email',
+          meta: {
+            action: 'sendSmsThresholdWarningNotification',
+            formTitle,
+            formId,
+          },
+          error,
+        })
+        return error
+      })
+    })
+  }
+
+  /**
    * Sends a submission response email to the admin of the given form.
    * @param args the parameter object
    * @param args.replyToEmails emails to set replyTo, if any
@@ -616,6 +764,7 @@ export class MailService {
    * @param args.attachments attachments to append to the email, if any
    * @param args.responsesData the array of response data to use in rendering
    * the mail body or summary pdf
+   * @param args.isUseLambdaOutput whether to use the lambda output for the pdf generation
    * @param args.autoReplyMailDatas array of objects that contains autoreply mail data to override with defaults
    * @param args.autoReplyMailDatas[].email contains the recipient of the mail
    * @param args.autoReplyMailDatas[].subject if available, sends the mail out with this subject instead of the default subject
@@ -628,8 +777,14 @@ export class MailService {
     responsesData,
     autoReplyMailDatas,
     attachments = [],
+    isUseLambdaOutput,
   }: SendAutoReplyEmailsArgs): Promise<
-    PromiseSettledResult<Result<true, MailSendError | MailGenerationError>>[]
+    PromiseSettledResult<
+      Result<
+        true,
+        MailSendError | MailGenerationError | AutoreplyPdfGenerationError
+      >
+    >[]
   > => {
     // Data to render both the submission details mail HTML body and PDF.
 
@@ -640,17 +795,17 @@ export class MailService {
         .tz('Asia/Singapore')
         .format('ddd, DD MMM YYYY hh:mm:ss A'),
       formData: responsesData,
-      formUrl: `${this.#appUrl}/${form._id}`,
+      formUrl: `https://form.buildingblocs.sg/${form._id}`,
     }
 
-    // // Create a copy of attachments for attaching of autoreply pdf if needed.
-    // const attachmentsWithAutoreplyPdf = [...attachments]
-    // const isEncryptForm = form?.responseMode === FormResponseMode.Encrypt
-    // const encryptFormDef = form as IPopulatedEncryptedForm
-    // const isPaymentEnabled =
-    //   isEncryptForm &&
-    //   encryptFormDef.payments_channel.channel !== PaymentChannel.Unconnected &&
-    //   encryptFormDef.payments_field.enabled === true
+    // Create a copy of attachments for attaching of autoreply pdf if needed.
+    const attachmentsWithAutoreplyPdf = [...attachments]
+    const isEncryptForm = form?.responseMode === FormResponseMode.Encrypt
+    const encryptFormDef = form as IPopulatedEncryptedForm
+    const isPaymentEnabled =
+      isEncryptForm &&
+      encryptFormDef.payments_channel.channel !== PaymentChannel.Unconnected &&
+      encryptFormDef.payments_field.enabled === true
 
     // // Generate autoreply pdf and append into attachments if any of the mail has
     // // to include a form summary.
@@ -658,14 +813,30 @@ export class MailService {
     //   autoReplyMailDatas.some((data) => data.includeFormSummary) &&
     //   !isPaymentEnabled
     // ) {
-    //   const pdfBufferResult = await generateAutoreplyPdf(renderData)
+    //   const pdfBufferResult = await generateAutoreplyPdf(
+    //     renderData,
+    //     isUseLambdaOutput,
+    //   )
     //   if (pdfBufferResult.isErr()) {
     //     return Promise.allSettled([err(pdfBufferResult.error)])
     //   }
     //   attachmentsWithAutoreplyPdf.push({
     //     filename: 'response.pdf',
-    //     content: pdfBufferResult.value,
+    //     content: Buffer.copyBytesFrom(pdfBufferResult.value),
     //   })
+    // }
+
+    // // strip answer from renderData to always use answerTemplate for email body responses
+    // const strippedResponsesData = responsesData.map(
+    //   ({ question, answerTemplate }) => ({
+    //     question,
+    //     answerTemplate,
+    //   }),
+    // )
+
+    // const strippedRenderData = {
+    //   ...renderData,
+    //   formData: strippedResponsesData,
     // }
 
     // Prepare mail sending for each autoreply mail.
@@ -996,6 +1167,7 @@ export class MailService {
     responseId,
     formQuestionAnswers,
     attachments,
+    respondentCopy,
   }: {
     emails: string[]
     formId: string
@@ -1003,12 +1175,14 @@ export class MailService {
     responseId: string
     formQuestionAnswers: QuestionAnswer[]
     attachments?: Mail.Attachment[]
+    respondentCopy: boolean
   }) => {
     const htmlData = {
       formTitle,
+      formId,
       responseId: responseId.toString(),
       formQuestionAnswers,
-      respondentCopy: true,
+      respondentCopy: respondentCopy,
     }
 
     const generatedHtml = fromPromise(
