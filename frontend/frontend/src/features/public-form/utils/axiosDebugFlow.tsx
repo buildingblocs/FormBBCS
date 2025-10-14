@@ -6,7 +6,7 @@ import { ClientEnvVars } from '../../../../../shared/types'
 
 const getClientEnvWithFetch = async () => {
   const response = await fetch(
-    `https://formsg-1.fly.dev/api/v3/client/env`,
+    `http://localhost:5000/api/v3/client/env`,
   )
   if (response.ok) {
     const env = await response.json()
@@ -30,7 +30,7 @@ const getClientEnvWithFetch = async () => {
 const getClientEnvWithAxios = async () => {
   try {
     const env = await ApiService.get<ClientEnvVars>(
-      `https://formsg-1.fly.dev/api/v3/client/env`,
+      `http://localhost:5000/api/v3/client/env`,
     ).then(({ data }) => data)
 
     datadogLogs.logger.info(`handleSubmitForm: axios env vars successful`, {

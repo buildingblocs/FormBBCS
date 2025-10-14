@@ -8,7 +8,7 @@ import { ApiError } from '~typings/core'
 
 import { LOCAL_STORAGE_EVENT, LOGGED_IN_KEY } from '~constants/localStorage'
 
-export const API_BASE_URL = 'https://formsg-1.fly.dev/api/v3'
+export const API_BASE_URL = 'http://localhost:5000/api/v3'
 export class HttpError extends Error {
   code: number
   constructor(message: string, code: number) {
