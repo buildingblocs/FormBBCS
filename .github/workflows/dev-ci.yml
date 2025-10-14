@@ -47,8 +47,8 @@ jobs:
 
       - name: Checkout this repo
         uses: actions/checkout@v4
-        ref: dev
         with:
+          ref: dev
           path: demo
 
       - name: Replace files with demo-specific ones
