@@ -67,6 +67,8 @@ jobs:
       - name: Build
         run: npm run build:frontend
         working-directory: formsg
+        env:
+          VITE_APP_FORMSG_SDK_MODE: development
 
       - name: 📂 Sync files
         uses: SamKirkland/web-deploy@v1
