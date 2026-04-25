@@ -46,6 +46,8 @@ COPY --from=build /build/apps/backend/node_modules /opt/formsg/apps/backend/node
 COPY --from=build /build/apps/backend/package.json /opt/formsg/apps/backend/package.json
 COPY --from=build /build/apps/backend/dist /opt/formsg/apps/backend/dist
 
+COPY --from=build /build/apps/backend/__tests__/setup/certs /opt/formsg/__tests__/setup/certs
+
 # Run as non-privileged user (pre-created in runtime-base)
 USER formsguser
 
