@@ -60,8 +60,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             APP_VERSION=${{ github.sha }}
-            DD_RUM_APP_ID=""
-            DD_RUM_CLIENT_TOKEN=""
 
       - name: Generate artifact attestation
         uses: actions/attest@v4
