@@ -20,9 +20,6 @@ ENV VITE_APP_DD_RUM_APP_ID=$DD_RUM_APP_ID
 ENV VITE_APP_DD_RUM_CLIENT_TOKEN=$DD_RUM_CLIENT_TOKEN
 RUN pnpm build
 
-# Move mockpass to prod dependency since we need the static certs
-RUN pnpm i -P @opengovsg/mockpass -w
-
 # Final stage: runtime deps and user already in base image
 FROM ${RUNTIME_BASE_IMAGE}
 LABEL maintainer=FormSG<form@open.gov.sg>
@@ -48,9 +45,6 @@ COPY --from=build /build/package.json /opt/formsg/package.json
 COPY --from=build /build/apps/backend/node_modules /opt/formsg/apps/backend/node_modules
 COPY --from=build /build/apps/backend/package.json /opt/formsg/apps/backend/package.json
 COPY --from=build /build/apps/backend/dist /opt/formsg/apps/backend/dist
-
-# Grab Singpass RP jwks config from __tests__
-COPY --from=build /build/__tests__/setup/certs /opt/formsg/__tests__/setup/certs
 
 # Run as non-privileged user (pre-created in runtime-base)
 USER formsguser
