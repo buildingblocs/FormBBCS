@@ -1,7 +1,4 @@
 # syntax=docker/dockerfile:1
-
-RUN echo hi
-
 ARG BUILD_BASE_IMAGE=ghcr.io/opengovsg/formsg:build-latest
 ARG RUNTIME_BASE_IMAGE=ghcr.io/opengovsg/formsg:runtime-latest
 
