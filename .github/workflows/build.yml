@@ -55,20 +55,16 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Set up Buildx (docker-container)
+      - name: Set up buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
         with:
           driver: docker-container
           use: true
 
-      - name: Debug buildx
-        run: |
-          docker buildx version
-          docker buildx ls
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
+        id: push
         with:
           context: ./formsg
           file: ./formsg/Dockerfile.production
@@ -86,3 +82,26 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Login to azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy new app
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az extension add --name containerapp --upgrade
+            az containerapp update -n app -g formsg \
+              --image ghcr.io/buildingblocs/formbbcs@sha-${GITHUB_SHA::7}
