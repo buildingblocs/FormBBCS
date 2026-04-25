@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: formbbcs
+  IMAGE_NAME: buildingblocs/formbbcs
 
 jobs:
   build:
@@ -25,6 +25,16 @@ jobs:
           repository: opengovsg/FormSG
           ref: refs/heads/release-al2
           path: formsg
+
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+        with:
+          path: demo
+
+      - name: Replace files with demo-specific ones
+        run: |
+          cp -rf demo/v2/* formsg/
+          rm -rf demo/
 
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -48,6 +58,10 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APP_VERSION=${{ github.sha }}
+            DD_RUM_APP_ID=""
+            DD_RUM_CLIENT_TOKEN=""
 
       - name: Generate artifact attestation
         uses: actions/attest@v4
