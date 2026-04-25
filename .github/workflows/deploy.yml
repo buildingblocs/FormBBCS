@@ -1,0 +1,32 @@
+name: Build and deploy
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: buildingblocs/formbbcs
+
+jobs:
+  deploy:
+      needs: build
+      runs-on: ubuntu-latest
+      permissions:
+        id-token: write
+        contents: read
+
+      steps:
+        - name: Login to azure
+          uses: azure/login@v2
+          with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+        - name: Deploy new app
+          uses: azure/cli@v2
+          with:
+            inlineScript: |
+              az extension add --name containerapp --upgrade
+              az containerapp update -n app -g formsg \
+                --image ghcr.io/buildingblocs/formbbcs:main

@@ -1,5 +1,5 @@
 # to build and publish image onto github registry for use in azure
-name: Build docker image
+name: Build and deploy
 
 on:
   workflow_dispatch:
@@ -104,4 +104,4 @@ jobs:
           inlineScript: |
             az extension add --name containerapp --upgrade
             az containerapp update -n app -g formsg \
-              --image ghcr.io/buildingblocs/formbbcs@sha-${GITHUB_SHA::7}
+              --image ghcr.io/buildingblocs/formbbcs:sha-${GITHUB_SHA::7}
