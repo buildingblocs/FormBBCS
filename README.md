@@ -24,6 +24,7 @@ v2 has both frontend and backend hosted on Azure, and therefore may require more
 
 **Backend**
 - Removed "attached pdf" text as pdf is no longer generated on server side, and instead on lamda. We dont use aws
+- modified imagefield, as since we do not use s3 for images, rather it is hosted somewhere, it will try to validate, fail validation, and come up with error "Error: [Please ensure that your url is in the valid format]. Please refresh and try again. If you still need help, email us at form@open.gov.sg."
 
 **Frontend**
 - All mostly just name changes so it is more branded for buildingblocs

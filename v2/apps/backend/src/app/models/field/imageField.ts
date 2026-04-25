@@ -1,5 +1,3 @@
-// myat: v2 azre migration: this is added cus if you try to save the 
-// form without this, it will throw an error that somethings wrong
 import { Schema } from 'mongoose'
 
 import { IImageFieldSchema } from '../../../types'
@@ -8,7 +6,7 @@ const createImageFieldSchema = () => {
   return new Schema<IImageFieldSchema>({
     url: {
       type: String,
-      required: true,
+      required: true
     },
     fileMd5Hash: {
       type: String,
