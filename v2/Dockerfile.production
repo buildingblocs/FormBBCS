@@ -21,7 +21,7 @@ ENV VITE_APP_DD_RUM_CLIENT_TOKEN=$DD_RUM_CLIENT_TOKEN
 RUN pnpm build
 
 # Move mockpass to prod dependency since we need the static certs
-RUN pnpm i -P @opengovsg/mockpass
+RUN pnpm i -P @opengovsg/mockpass -w
 
 # Final stage: runtime deps and user already in base image
 FROM ${RUNTIME_BASE_IMAGE}
