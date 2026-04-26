@@ -42,9 +42,7 @@ const isWogadLoginEnabled = ({
   isRbiIp: boolean
 }) => {
   return (
-    wogadLoginFeatureValue === WogadLoginFeatureValue.ALL ||
-    (wogadLoginFeatureValue === WogadLoginFeatureValue.INTRANET_AND_RBI_ONLY &&
-      (isIntranetIp || isRbiIp))
+    wogadLoginFeatureValue === WogadLoginFeatureValue.ALL
   )
 }
 
@@ -63,7 +61,7 @@ const LoginOptionButtons = ({
     <Stack spacing="1rem">
       {shouldShowWogadLogin && <WogadLoginButton />}
       {shouldShowSsoLogin && <SsoLoginButton />}
-      {!shouldShowSgidLogin && <SgidLoginButton />}
+      {shouldShowSgidLogin && <SgidLoginButton />}
     </Stack>
   ) : undefined
 }
@@ -78,7 +76,7 @@ export const LoginPage = (): JSX.Element => {
   const shouldShowSsoLogin = (isOgpIp && showOgpSuiteSso) || isDev
   const wogadLoginFeatureValue = useFeatureValue(
     featureFlags.wogadLogin,
-    WogadLoginFeatureValue.OFF,
+    WogadLoginFeatureValue.ON,
   )
   const shouldShowWogadLogin = isWogadLoginEnabled({
     wogadLoginFeatureValue,
