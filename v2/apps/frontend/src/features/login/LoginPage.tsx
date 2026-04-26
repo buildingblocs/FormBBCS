@@ -76,7 +76,7 @@ export const LoginPage = (): JSX.Element => {
   const shouldShowSsoLogin = (isOgpIp && showOgpSuiteSso) || isDev
   const wogadLoginFeatureValue = useFeatureValue(
     featureFlags.wogadLogin,
-    WogadLoginFeatureValue.ON,
+    WogadLoginFeatureValue.ALL,
   )
   const shouldShowWogadLogin = isWogadLoginEnabled({
     wogadLoginFeatureValue,
