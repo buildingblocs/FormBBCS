@@ -46,7 +46,7 @@ export const enSG: Login = {
       loginText: 'Log in with OGP SSO',
     },
     WogadLoginButton: {
-      loginText: 'Log in with WOG AD',
+      loginText: 'Log in with BuildingBloCS Microsoft 365',
     },
   },
 }

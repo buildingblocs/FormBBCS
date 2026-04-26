@@ -61,7 +61,7 @@ const LoginOptionButtons = ({
     <Stack spacing="1rem">
       {shouldShowWogadLogin && <WogadLoginButton />}
       {shouldShowSsoLogin && <SsoLoginButton />}
-      {shouldShowSgidLogin && <SgidLoginButton />}
+      {/* {shouldShowSgidLogin && <SgidLoginButton />} */}
     </Stack>
   ) : undefined
 }
