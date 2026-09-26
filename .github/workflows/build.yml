@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: opengovsg/FormSG
-          ref: refs/heads/release-al2
+          ref: refs/heads/develop
           path: formsg
 
       - name: Checkout this repo
