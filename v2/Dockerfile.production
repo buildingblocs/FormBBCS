@@ -18,7 +18,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV VITE_APP_VERSION=$APP_VERSION
 ENV VITE_APP_DD_RUM_APP_ID=$DD_RUM_APP_ID
 ENV VITE_APP_DD_RUM_CLIENT_TOKEN=$DD_RUM_CLIENT_TOKEN
-RUN pnpm build
+RUN pnpm install && pnpm build
 
 
 # Final stage: runtime deps and user already in base image
