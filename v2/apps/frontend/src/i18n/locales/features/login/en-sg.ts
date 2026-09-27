@@ -31,8 +31,7 @@ export const enSG: Login = {
     OTPForm: {
       signin: 'Sign in',
       otpRequired: 'OTP is required.',
-      otpLengthCheck: 'Please enter a 6 digit OTP.',
-      otpTypeCheck: 'Only numbers are allowed.',
+      otpLengthCheck: 'Please enter a {otpLength} character OTP.',
       otpFromEmail: 'Enter OTP sent to {email}',
     },
     SgidLoginButton: {
@@ -47,6 +46,9 @@ export const enSG: Login = {
     },
     WogadLoginButton: {
       loginText: 'Log in with BuildingBloCS Microsoft 365',
+    },
+    OneLoginButton: {
+      loginText: 'Log in with one.gov.sg',
     },
   },
 }
