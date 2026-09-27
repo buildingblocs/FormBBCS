@@ -5,6 +5,7 @@ ARG RUNTIME_BASE_IMAGE=ghcr.io/opengovsg/formsg:runtime-latest
 # node-modules-builder stage installs/compiles the node_modules folder
 # Build stage: node_modules already present in base image — just copy source and build
 FROM ${BUILD_BASE_IMAGE} AS build
+RUN apk add --no-cache cmake make g++ python3
 ARG APP_VERSION=""
 ARG DD_RUM_APP_ID=""
 ARG DD_RUM_CLIENT_TOKEN=""
@@ -18,7 +19,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV VITE_APP_VERSION=$APP_VERSION
 ENV VITE_APP_DD_RUM_APP_ID=$DD_RUM_APP_ID
 ENV VITE_APP_DD_RUM_CLIENT_TOKEN=$DD_RUM_CLIENT_TOKEN
-RUN pnpm install && pnpm build
+RUN pnpm install --frozen-lockfile && pnpm build
 
 
 # Final stage: runtime deps and user already in base image
