@@ -6,9 +6,10 @@ export const enSG: Login = {
     banner: 'You can now collect payments directly on your form!',
     forbidden: 'You do not have access to this service.',
     expiredSession: 'Your login session has expired. Please login again.',
+    signingInWithOne: 'Signing into one.gov.sg...',
   },
   SelectProfilePage: {
-    accountSelection: 'Choose an account to continue to FormSG',
+    accountSelection: 'Choose an account to continue to FormBBCS',
     manualLogin: 'Or, login manually using email and OTP',
     noWorkEmailHeader: "Singpass login isn't available to you yet",
     noWorkEmailBody:
@@ -23,7 +24,7 @@ export const enSG: Login = {
   components: {
     LoginForm: {
       onlyAvailableForPublicOfficers:
-        'Log in with a .buildingblocs.sg or other whitelisted email address',
+        'Log in with a buildingblocs.sg or other whitelisted email address',
       emailEmptyErrorMsg: 'Please enter an email address',
       login: 'Log in',
       haveAQuestion: 'Have a question?',
@@ -45,7 +46,7 @@ export const enSG: Login = {
       loginText: 'Log in with OGP SSO',
     },
     WogadLoginButton: {
-      loginText: 'Log in with BuildingBloCS Microsoft 365',
+      loginText: 'Log in with BuildingBloCS M365',
     },
     OneLoginButton: {
       loginText: 'Log in with one.gov.sg',
