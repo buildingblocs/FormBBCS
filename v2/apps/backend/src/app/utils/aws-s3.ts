@@ -31,6 +31,7 @@ type CreatePresignedPostDataParams = {
   expiresSeconds: number
   size: number
   key?: string
+  fileMd5Hash?: string
   fileType?: string
   acl?: string
 }
