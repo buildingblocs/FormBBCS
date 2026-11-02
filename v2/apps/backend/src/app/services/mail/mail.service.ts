@@ -1317,6 +1317,7 @@ export class MailService {
         responseJson,
         attachments,
         replyTo,
+        emailType = EmailType.WorkflowCompletion,
     }: {
         emails: string[];
         formId: string;
@@ -1328,6 +1329,7 @@ export class MailService {
         responseJson: string;
         attachments?: Mail.Attachment[];
         replyTo?: string;
+        emailType?: EmailType.WorkflowCompletion | EmailType.AdminResponse;
     }): ResultAsync<true, MailGenerationError | MailSendError> => {
         const emailTemplateData: EmailData = {
             formTitle,
@@ -1343,7 +1345,7 @@ export class MailService {
             subject: `Response received - ${formTitle} (${responseId})`,
             htmlData: emailTemplateData,
             attachments,
-            emailType: EmailType.WorkflowCompletion,
+            emailType,
             actionName: "sendMrfWorkflowCompletionEmail",
             submissionId,
             replyTo,
@@ -1424,6 +1426,41 @@ export class MailService {
                 : WorkflowOutcome.APPROVED,
             emailType: EmailType.WorkflowApproval,
             actionName: "sendMrfApprovalEmail",
+        });
+
+    sendMrfWorkflowSentBackEmail = ({
+        emails,
+        formId,
+        formTitle,
+        responseId,
+        responseUrl,
+        remarks,
+    }: {
+        emails: string[];
+        formId: string;
+        formTitle: string;
+        responseId: string;
+        responseUrl: string;
+        remarks?: string;
+    }): ResultAsync<true, MailGenerationError | MailSendError> =>
+        this.#sendEmailWithTemplate({
+            emails,
+            formId,
+            subject: `Amendments requested - ${formTitle} (${responseId})`,
+            htmlData: {
+                emailTitle: `Amend your part of ${formTitle}`,
+                emailBody: [
+                    "The form admin has sent this response back to you for amendments. The answers given so far are filled in.",
+                    ...(remarks
+                        ? ["", "Remarks from the form admin:", remarks]
+                        : []),
+                ].join("\n"),
+                formTitle,
+                responseId,
+                reviewUrl: responseUrl,
+            },
+            emailType: EmailType.WorkflowSentBack,
+            actionName: "sendMrfWorkflowSentBackEmail",
         });
 
     sendMrfWorkflowStoppedEmail = (props: {
